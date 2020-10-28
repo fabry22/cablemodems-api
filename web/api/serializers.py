@@ -1,22 +1,22 @@
 from rest_framework import serializers
-from api.models import DocsisUpdate
+from api.models import CableModem
 from rest_framework.validators import UniqueValidator
 from decouple import config
 
-class DocsisUpdateSerializer(serializers.ModelSerializer):
+class CableModemSerializer(serializers.ModelSerializer):
     class Meta:
-        model = DocsisUpdate
+        model = CableModem
         fields = ['modem_macaddr', 'ipaddr', 'cmts_ip', 'agentid', 'version', 'mce_concat', 'mce_ver', 'mce_frag', 'mce_phs', 'mce_igmp', 'mce_bpi', 'mce_ds_said', 'mce_us_sid', 'mce_filt_dot1p', 'mce_filt_dot1q', 'mce_tetps', 'mce_ntet', 'mce_dcc', 'thetime', 'offer_time', 'ack_time', 'net_id', 'cluster_id', 'ra_id', 'vsi_devtype', 'vsi_esafetypes', 'vsi_serialno', 'vsi_hwver', 'vsi_swver', 'vsi_bootrom', 'vsi_oui', 'vsi_model', 'vsi_vendor']
 
     def create(self, validated_data):
         """
-        Create and return a new `DocsisUpdate` instance, given the validated data.
+        Create and return a new `CableModem` instance, given the validated data.
         """
-        return DocsisUpdate.objects.create(**validated_data)
+        return CableModem.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
         """
-        Update and return an existing `DocsisUpdate` instance, given the validated data.
+        Update and return an existing `CableModem` instance, given the validated data.
         """
         instance.modem_macaddr = validated_data.get('modem_macaddr', instance.modem_macaddr)
         instance.ipaddr = validated_data.get('ipaddr', instance.ipaddr)

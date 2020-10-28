@@ -1,7 +1,7 @@
 from django.db import models
 
 # Create your models here.
-class DocsisUpdate(models.Model):
+class CableModem(models.Model):
     modem_macaddr = models.CharField(primary_key=True, max_length=15)
     ipaddr = models.CharField(unique=True, max_length=16)
     cmts_ip = models.CharField(max_length=16)
