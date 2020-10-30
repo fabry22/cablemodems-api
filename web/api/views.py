@@ -50,22 +50,28 @@ class CableModemModelsList(APIView):
             reference_route = path_resolver(config('JSON_REFERENCE_MODELS'))
             name_args = []
             soft_args = []
+            vendor_name = req_args[vendor]
             with open(reference_route, 'r') as json_ref:
                 models = json.load(json_ref)[config('CM_MODELS')]
                 for model in models:
-                    if (req_args[vendor] == model[vendor]):
+                    if (vendor_name == model[vendor]):
                         name_args.append(model[name])
                         soft_args.append(model[soft])
-            include = { config('REG_VENDOR') : req_args[vendor] }
-            exclude_sw = {
-                config('REG_SWV')+config('IN') : soft_args
-            }
-            exclude_model = {
-                config('REG_MODEL')+config('IN') : name_args
-            }
-            cms = CableModem.objects.filter(**include).exclude(**exclude_sw).exclude(**exclude_model)
-            serializer = CableModemSerializer(cms, many=True)
-        return Response(serializer.data)
+            if not name_args:
+                return Response(config('ERR_REQ_WO_VEND_MSG').format(vendor_name), status=status.HTTP_404_NOT_FOUND)
+            else:
+                include = { config('REG_VENDOR') : vendor_name }
+                exclude_sw = {
+                    config('REG_SWV')+config('IN') : soft_args
+                }
+                exclude_model = {
+                    config('REG_MODEL')+config('IN') : name_args
+                }
+                cms = CableModem.objects.filter(**include).exclude(**exclude_sw).exclude(**exclude_model)
+                serializer = CableModemSerializer(cms, many=True)
+                return Response(serializer.data)
+        else:
+            return Response(config('ERR_REQ_WO_VEND_MSG'), status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, format=None):
         serializer = CableModemModelSerializer(data=request.data)
