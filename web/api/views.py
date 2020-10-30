@@ -11,6 +11,24 @@ def path_resolver(relative_path):
     script_dir = os.path.dirname(__file__) 
     return os.path.join(script_dir, relative_path)
 
+def model_append(data):
+    reference_route = path_resolver(config('JSON_REFERENCE_MODELS'))
+    tmp_route = reference_route+".tmp"
+    try:
+        out_data = None
+        with open(reference_route, "r+") as ref_file:
+            out_data = json.load(ref_file)
+            out_data[config('CM_MODELS')].append(data)
+        with open(tmp_route, "w+") as out_file:
+            json.dump(out_data, out_file, indent=config('IDENT', cast=int))
+    except:
+        logging.error(config('ERR_WR_JSON_MODEL_MSG'))
+        return False
+    else:
+        os.remove(reference_route)
+        os.rename(tmp_route, reference_route)
+        return True
+
 class CableModemList(generics.ListCreateAPIView):
     queryset = CableModem.objects.all()
     serializer_class = CableModemSerializer
@@ -50,19 +68,9 @@ class CableModemModelsList(APIView):
     def post(self, request, format=None):
         serializer = CableModemModelSerializer(data=request.data)
         if serializer.is_valid():
-            reference_route = path_resolver(config('JSON_REFERENCE_MODELS'))
-            tmp_route = reference_route+".tmp"
-            try:
-                out_data = None
-                with open(reference_route, "r+") as ref_file:
-                    out_data = json.load(ref_file)
-                    out_data[config('CM_MODELS')].append(serializer.data)
-                with open(tmp_route, "w+") as out_file:
-                    json.dump(out_data, out_file, indent=config('IDENT', cast=int))
-            except:
-                logging.error(config('ERR_WR_JSON_MODEL_MSG'))
-            else:
-                os.remove(reference_route)
-                os.rename(tmp_route, reference_route)
+            success = model_append(serializer.data)
+            if success:
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(config('ERR_WR_JSON_MODEL_MSG'), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -80,6 +80,11 @@
             "vendor": "Cisco",
             "name": "DPC2320",
             "soft": "v2"
+        },
+        {
+            "vendor": "Cisco",
+            "name": "DPC2320",
+            "soft": "v2"
         }
     ]
 }

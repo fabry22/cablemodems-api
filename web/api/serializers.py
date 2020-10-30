@@ -11,9 +11,6 @@ class CableModemModelSerializer(serializers.Serializer):
     name = serializers.CharField()
     soft = serializers.CharField()
 
-    def create(self, validated_data):
-        return Snippet.objects.create(**validated_data)
-
     def update(self, instance, validated_data):
         instance.vendor = validated_data.get('vendor', instance.vendor)
         instance.name = validated_data.get('name', instance.name)
