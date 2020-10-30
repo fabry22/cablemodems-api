@@ -57,11 +57,13 @@ class CableModemModelsList(APIView):
                         name_args.append(model[name])
                         soft_args.append(model[soft])
             include = { config('REG_VENDOR') : req_args[vendor] }
-            exclude = {
-                config('REG_MODEL')+config('IN') : name_args,
+            exclude_sw = {
                 config('REG_SWV')+config('IN') : soft_args
             }
-            cms = CableModem.objects.filter(**include).exclude(**exclude)
+            exclude_model = {
+                config('REG_MODEL')+config('IN') : name_args
+            }
+            cms = CableModem.objects.filter(**include).exclude(**exclude_sw).exclude(**exclude_model)
             serializer = CableModemSerializer(cms, many=True)
         return Response(serializer.data)
 
