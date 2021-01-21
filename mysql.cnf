@@ -3,5 +3,5 @@ database = db
 user = django
 password = p@ss
 default-character-set = utf8
-host = 0.0.0.0
+host = mysql-db
 port = 3306
